@@ -50,7 +50,17 @@ impl Iterator for SocketAddrs {
 /// Create a new resolver with the default configuration,
 /// which reads from `/etc/resolve.conf`.
 fn new_resolver() -> io::Result<TokioAsyncResolver> {
-    let (config, opts) = system_conf::read_system_conf()
-        .map_err(|e| io::Error::new(e.kind(), format!("error reading DNS system conf: {}", e)))?;
+    let alidns_ips = vec![
+        std::net::IpAddr::V4(std::net::Ipv4Addr::new(223, 5, 5, 5)),
+        std::net::IpAddr::V4(std::net::Ipv4Addr::new(223, 6, 6, 6)),
+    ];
+    let name_server = trust_dns_resolver::config::NameServerConfigGroup::from_ips_https(
+        &alidns_ips,
+        443,
+        "dns.alidns.com".to_string(),
+        true,
+    );
+    let config = ResolverConfig::from_parts(None, vec![], name_server);
+    let opts = ResolverOpts::default();
     Ok(TokioAsyncResolver::tokio(config, opts))
 }
