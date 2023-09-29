@@ -63,5 +63,5 @@ fn new_resolver() -> io::Result<TokioAsyncResolver> {
     let config = ResolverConfig::from_parts(None, vec![], name_server);
     let mut opts = ResolverOpts::default();
     opts.use_hosts_file = false;
-    opts.Ok(TokioAsyncResolver::tokio(config, opts))
+    Ok(TokioAsyncResolver::tokio(config, opts))
 }
